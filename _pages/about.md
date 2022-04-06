@@ -23,4 +23,4 @@ Put your address / P.O. box / other info right below your picture. You can also 
 
 Link to your social media connections, too. This theme is set up to use [Font Awesome icons](http://fortawesome.github.io/Font-Awesome/) and [Academicons](https://jpswalsh.github.io/academicons/), like the ones below. Add your Facebook, Twitter, LinkedIn, Google Scholar, or just disable all of them. -->
 
-Hi there, I'm Yafei (Jeffrey) Hu. I'm currently a PhD student at CMU ECE department. I work with Prof. [Sebastian Scherer](https://theairlab.org/team/sebastian/) in CMU Robotics Institute. I'm interested in perception, reinforcement learning, and dection making for robotics. 
+Hi there, I'm Yafei (Jeffrey) Hu. I'm currently a PhD student at CMU ECE department. I work with Prof. [Sebastian Scherer](https://theairlab.org/team/sebastian/) in CMU Robotics Institute. I'm interested in perception, reinforcement learning, and dection making for robotics. Before comming to Pittsburgh, 
