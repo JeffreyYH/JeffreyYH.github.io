@@ -2,7 +2,7 @@
 ---
 <!-- _layouts/bib.html -->
       <div class="row">
-        <div class="col-sm-4 abbr">
+        <!-- <div class="col-sm-4 abbr">
         {%- if entry.abbr -%}
           {%- if site.data.venues[entry.abbr] -%}
           <abbr class="badge"><a href="{{site.data.venues[entry.abbr].url}}">{{entry.abbr}}</a></abbr>
@@ -10,6 +10,14 @@
           <abbr class="badge">{{entry.abbr}}</abbr>
           {%- endif -%}
         {%- endif -%}
+        </div> -->
+
+        <div class="col-sm-4">
+            <div class="item">
+                <span class="notify-badge"></span>
+                <!-- <img src="https://i.gifer.com/XOsX.gif"  width="200" height="200" alt="" /> -->
+                <img class="col bibone first" src="{{ site.data.image_name[entry.abbr].img| prepend: '/assets/img/' | prepend: site.baseurl | prepend: site.url }}" width="200" height="120">
+            </div>
         </div>
 
         <!-- Entry bib key -->
