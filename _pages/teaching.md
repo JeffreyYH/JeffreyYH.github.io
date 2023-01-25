@@ -13,7 +13,7 @@ Organize your courses by years, topics, or universities, however you like! -->
 
 April 2022, Guest Lecture on [18661-Intro to ML for Engineers](https://18661.github.io/): [Introduction to Robotic Learning](https://docs.google.com/presentation/d/1gBx5P4PhKIvoQ2fYw61Muxv61_jY5xDrAvo_XjVO4Vc/edit?usp=sharing)
 
-Spring 2022, TA for CMU course [18661-Intro to ML for Engineers](https://18661.github.io/)
+Spring 2022, Fall 2022, TA for CMU course [18661-Intro to ML for Engineers](https://18661.github.io/)
 
 Fall 2021, TA for CMU course [10703-Deep Reinforcement Learning](https://cmudeeprl.github.io/703website_f21/)
 
