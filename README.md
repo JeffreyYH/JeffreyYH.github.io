@@ -389,7 +389,7 @@ Originally, **al-folio** was based on the [\*folio theme](https://github.com/bog
 Since then, it got a full re-write of the styles and many additional cool features. -->
 
 
-## Quick deplyment
+## Quick deployment
 Env setup
 ```
 sudo apt install ruby ruby-dev
@@ -397,7 +397,7 @@ sudo gem install bundler
 bundle install
 ```
 
-Then deploy to gh-page
+Then deploy to gh-pages
 ```
 cd /LOCAL_REPO/
 ./bin/deploy
