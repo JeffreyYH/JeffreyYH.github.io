@@ -397,7 +397,7 @@ sudo gem install bundler
 bundle install
 ```
 
-Then deploy to gh-pages
+commit all the changes and then deploy to gh-pages
 ```
 cd /LOCAL_REPO/
 ./bin/deploy
