@@ -391,9 +391,11 @@ Since then, it got a full re-write of the styles and many additional cool featur
 
 ## Quick deployment
 Env setup
+Install rbenv with github following this: https://github.com/rbenv/rbenv
+
+Then
 ```
-sudo apt install ruby ruby-dev
-sudo gem install bundler
+gem install bundler
 bundle install
 ```
 
