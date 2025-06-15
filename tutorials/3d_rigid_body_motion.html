@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,900">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:300,400,700">
+    <link rel="stylesheet" href="../../latex.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+          displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+          processEscapes: true
+        },
+        TeX: {
+          equationNumbers: {
+            autoNumber: "AMS",
+            useLabelIds: true
+          }
+        },
+        "HTML-CSS": {
+          availableFonts: ["STIX"],
+          linebreaks: { automatic: true },
+          imageFont: null
+        }
+      });
+    </script>
+    <script type="text/javascript" async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+    <meta charset="UTF-8">
+    <base target="_blank">
+    <title>3D Rigid Body Motion</title>
+    <style>
+        body {
+            font-family: 'Lato', 'Google Sans', sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px 40px;
+            font-size: 18px;
+            counter-reset: figure-counter;
+            text-align: justify;
+        }
+        h1 {
+            color: #333;
+            font-family: 'Google Sans', sans-serif;
+            text-align: center;
+            margin-bottom: 2em;
+            font-size: 2.5em;
+        }
+        h2 {
+            color: #333;
+            font-family: 'Google Sans', sans-serif;
+            font-size: 1.8em;
+            margin-top: 1.5em;
+        }
+        h3 {
+            color: #333;
+            font-family: 'Google Sans', sans-serif;
+            font-size: 1.4em;
+            margin-top: 1.2em;
+        }
+        p {
+            font-size: 1.1em;
+            margin-bottom: 1em;
+        }
+        .figure {
+            text-align: center;
+            margin: 30px 0;
+            width: 100%;
+            counter-increment: figure-counter;
+        }
+        .figure img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        .figure-caption {
+            font-style: italic;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 1em;
+        }
+        .figure-caption::before {
+            content: "Figure " counter(figure-counter) ": ";
+            font-weight: bold;
+            font-style: normal;
+        }
+        .subfigure-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 20px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .subfigure {
+            flex: 0 1 600px;
+            text-align: center;
+        }
+        .subfigure img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            min-width: 400px;
+        }
+        .subfigure .figure-caption {
+            font-style: italic;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 1em;
+        }
+        .subfigure .figure-caption::before {
+            content: none;
+        }
+        .MathJax {
+            font-size: 1.1em !important;
+        }
+        .MathJax_Display {
+            overflow-x: auto;
+            overflow-y: hidden;
+            margin: 1em 0;
+        }
+        .equation-container {
+            display: table;
+            width: 100%;
+            margin: 1.5em 0;
+        }
+        .equation-content {
+            display: table-cell;
+            width: 100%;
+        }
+        .figure-label::before {
+            content: "Figure " counter(figure-counter) ":";
+            font-weight: bold;
+            margin-right: 0.5em;
+        }
+        /* MathJax display styles */
+        .MJXc-display {
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .MJXc-display::-webkit-scrollbar {
+            width: 5px;
+            height: 2px;
+        }
+        .MJXc-display::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .MJXc-display::-webkit-scrollbar-thumb {
+            background: #ddd;
+            visibility:hidden;
+        }
+        .MJXc-display:hover::-webkit-scrollbar-thumb {
+            visibility:visible;
+        }
+    </style>
+</head>
+<body>
+    <h1>3D Rigid Body Motion</h1>
+
+    <h2>Rigid body transformation</h2>
+    <p>In robotics and computer vision, we often need to choose multiple coordinate frames to reflect the motion of cameras, 
+    different links reference to a common selected world frame, aka inertial frame. The transformation between these frames is denoted as a transformation matrix $\mathbf{T}$,</p>
+
+    $$
+    \begin{align}
+        \mathbf{T} = 
+        \begin{bmatrix} 
+        \mathbf{R} & \mathbf{t} \\
+        \mathbf{0} & \mathbf{1}
+        \end{bmatrix}
+    \end{align}
+    $$
+
+    <p>its inverse is</p>
+
+    $$
+    \begin{align}
+        \mathbf{T}^{-1} = 
+        \begin{bmatrix}
+        \mathbf{R}^{\top} & -\mathbf{R}^{\top}\mathbf{t} \\
+        \mathbf{0}^{\top} & \mathbf{1}
+        \end{bmatrix}
+    \end{align}
+    $$
+
+    <p>where $\mathbf{R}$ is a rotation matrix, $\mathbf{t}$ is a translation vector. The transformation describe a relative motion, so we have to specify the motion is in relative to which frame.
+    For example, we define the pose of the camera frame $C$ expressed in the world frame $W$ as $\mathbf{T}_{WC}$, which means frame C seen from frame W. 
+    Assume a robot moves with a onboard camera. Robot Body frame is $B$, the pose of the camera frame $C$ expressed in the robot body frame $B$ is $\mathbf{T}_{BC}$. 
+    The robot pose can be expressed as,</p>
+
+    $$
+        \mathbf{T}_{WB} = \mathbf{T}_{WC} \mathbf{T}_{BC}^{-1}
+    $$
+
+    <p>The pose indicating transformation from body frame $B$ seen from world frame $W$, which indicating the motion of the robot body, is a transform of a 3D landmark point $\mathbf{X}$ from the body frame $B$ to the world frame $W$.</p>
+
+    $$
+    \begin{align}
+        \mathbf{X}_W = \mathbf{T}_{WB} \mathbf{X}_B
+    \end{align}
+    $$
+
+    <p>And the transformation from world frame $W$ to body frame $B$ is the inverse of the above transformation,</p>
+
+    $$
+    \begin{align}
+        \mathbf{X}_B = \mathbf{T}_{WB}^{-1} \mathbf{X}_W
+    \end{align}
+    $$
+
+    <p>We will give a illustration of the inverse of the pose in the next section.</p>
+
+    <h2>Rotation matrix</h2>
+    <p>Let's start with a 2D example, 2-dimensional rotation matrix is denoted as:</p>
+
+    $$
+    \begin{align}
+        \mathbf{R} = 
+        \begin{bmatrix} 
+        \cos(\theta) & -\sin(\theta) \\
+        \sin(\theta) & \cos(\theta) \\
+        \end{bmatrix}
+    \end{align}
+    $$
+
+    <p>rotation $\mathbf{R}$ rotates vectors in the plane by $\theta$ degrees counterclockwise.</p>
+
+    <p>Extend to 3-dimensional rotation matrix:</p>
+
+    $$
+    \begin{align}
+        \mathbf{R} = \mathbf{R}_x \mathbf{R}_y \mathbf{R}_z = 
+        \begin{bmatrix} 
+        1 & 0 & 0 \\
+        0 & \cos(\theta) & -\sin(\theta) \\
+        0 & \sin(\theta) & \cos(\theta) \\
+        \end{bmatrix}  
+        \begin{bmatrix} 
+        \cos(\theta) & 0 & \sin(\theta) \\
+        0 & 1 & 0 \\
+        -\sin(\theta) & 0 & \cos(\theta) \\
+        \end{bmatrix}  
+        \begin{bmatrix} 
+        \cos(\theta) & -\sin(\theta) & 0 \\
+        \sin(\theta) & \cos(\theta) & 0 \\
+        0 & 0 & 1 \\
+        \end{bmatrix}
+    \end{align}
+    $$
+
+    <p>$\mathbf{R}$ is orthogonal matrix and its determinant equals to 1.</p>
+
+    $$
+    \begin{align}
+        \mathbf{R}\mathbf{R}^{\top} = \mathbf{I} \quad \text{hence} \quad \mathbf{R}^{-1} = \mathbf{R}^{\top}
+    \end{align}
+    $$
+
+    $$
+    \begin{align}
+        \det(\mathbf{R}) = 1
+    \end{align}
+    $$
+
+    <p>Try to prove the determinant of $\mathbf{R}$ is 1?</p>
+
+    $$
+    \begin{align}
+        \det(\mathbf{R}) = \det(\mathbf{R}_x \mathbf{R}_y \mathbf{R}_z) = \det(\mathbf{R}_x) \det(\mathbf{R}_y) \det(\mathbf{R}_z) = 1 \times 1 \times 1 = 1
+    \end{align}
+    $$
+
+    <p>If the determinant of a matrix is 1, it means the transformation preserves the volume of the linear space — it does not <i>scale</i> it.</p>
+
+    <p>These properties make rotation matrix very unique, it is not just a matrix, but actually a manifold, more specifically, a Lie Manifold and also a Lie Group. So $\mathbf{R}$ is a $n$ dimensional Special Orthogonal (SO) Group, which is,</p>
+
+    $$
+    \begin{align}
+        \mathrm{SO}(n) =  
+        \left\{ \mathbf{R} \in \mathbb{\mathbf{R}}^{n \times n} \vert \mathbf{R}\mathbf{R}^{\top} = \mathbf{I}, \det(\mathbf{R}) = 1 \right\}
+    \end{align}
+    $$
+
+    <p>The rigid body transform $\mathbf{T}$ contains both rotation and translation, we form a Lie Manifold which is Special Euclidean Group, SE(3).</p>
+
+    $$
+    \begin{align}
+        \mathrm{SE}(3) = 
+        \left\{ \mathbf{T} \in \mathbb{\mathbf{R}}^{4 \times 4} \vert \mathbf{T} \text{ is a rigid body transform} \right\}
+    \end{align}
+    $$
+
+    <p>We will talk about more details about Lie Group and Lie Algebra in the next lecture.</p>
+
+    <h3>Problem of Euler angle and Introduction to Quaternion</h3>
+    <p>So can we just use a 3D vector which contains the rotation angles around x, y, z axes, to represent the rotation? The answer is no since it will bring the problem of <i>Gimbal Lock</i>, shown in the following figure.</p>
+
+    <div class="figure">
+        <div class="subfigure-container">
+            <div class="subfigure">
+                <img src="figs/gimbal_lock_1.png" alt="Gimbal Lock 1">
+                <div class="figure-caption">Gimbal Lock 1</div>
+            </div>
+            <div class="subfigure">
+                <img src="figs/gimbal_lock_2.png" alt="Gimbal Lock 2">
+                <div class="figure-caption">Gimbal Lock 2</div>
+            </div>
+        </div>
+        <div class="figure-caption">Illustration of the problem of using Euler angle to bring the problem of Gimbal Lock.</div>
+    </div>
+
+    <p>Although it is OK to represent the 3D rotation by 3 by 3 rotation matrix, it is not the best way to do so since we are literally using 9D vector to represent the a 3D rotation. To solve this problem, we can use a 4D vector to represent the rotation, which is called <i>Quaternion</i>, which in</p>
+
+    $$
+    \begin{align}
+        \mathbf{q} = 
+        \begin{bmatrix}
+        q_w \\
+        q_x \\
+        q_y \\
+        q_z
+        \end{bmatrix}
+    \end{align}
+    $$
+
+    <p>where $q_x, q_y, q_z$ are the imaginary parts, or called <i>vector part</i>, and $q_w$ is the real part, or called <i>scalar part</i>.</p>
+
+    <h3>Quaternion Mathmatics</h3>
+
+    <h2>Homogeneous coordinate</h2>
+    <p>if a point $\mathbf{P}$, its coordinate is transformed by $\mathbf{R}_1$ to $\mathbf{P}_1$, then by $\mathbf{R}_2$ to $\mathbf{P}_2$, without translation, we have,</p>
+
+    $$
+    \begin{align}
+        \mathbf{P}_2 = \mathbf{R}_2 \mathbf{P}_1 = \mathbf{R}_2 \mathbf{R}_1 \mathbf{P}
+    \end{align}
+    $$
+
+    <p>if a point $\mathbf{P}$, its coordinate is transformed by by $\mathbf{t}_1$ to $\mathbf{P}_1$, then by $\mathbf{t}_2$ to $\mathbf{P}_2$, without rotation, we have,</p>
+
+    $$
+    \begin{align}
+        \mathbf{P}_2 = \mathbf{t}_2 + \mathbf{P}_1 = \mathbf{t}_2 + \mathbf{t}_1 + \mathbf{P}
+    \end{align}
+    $$
+
+    <p>Suppose a point $\mathbf{P}$, its coordinate is transformed by [$\mathbf{R}_1$, $\mathbf{t}_1$] to $\mathbf{P}_1$, Then transformed by [$\mathbf{R}_2$, $\mathbf{t}_2$] to $\mathbf{P}_2$.</p>
+
+    $$
+    \begin{align}
+        \mathbf{P}_1 = \mathbf{R}_1 \mathbf{P} + \mathbf{t}_1
+    \end{align}
+    $$
+
+    $$
+    \begin{align}
+        \mathbf{P}_2 = \mathbf{R}_2 \mathbf{P}_1 + \mathbf{t}_2
+    \end{align}
+    $$
+
+    $$
+    \begin{align}
+        \mathbf{P}_2 = \mathbf{R}_2 (\mathbf{R}_1 \mathbf{P} + \mathbf{t}_1) + \mathbf{t}_2
+        = \mathbf{R}_2 \mathbf{R}_1 \mathbf{P} + \mathbf{R}_2 \mathbf{t}_1 + \mathbf{t}_2
+        \neq \mathbf{R}_2 \mathbf{R}_1 \mathbf{P} + \mathbf{t}_1 + \mathbf{t}_2
+    \end{align}
+    $$
+
+    <p>Multiple transformations cannot be described in a uniform way. How do we solve this problem?</p>
+    <p>The answer is to represent $\mathbf{P}$ in <b>homogeneous coordinates</b>.</p>
+
+    $$
+    \begin{align}
+        \begin{bmatrix}
+        \mathbf{P}_1 \\
+        \mathbf{1}
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+        \mathbf{R}_1 & \mathbf{t}_1 \\
+        \mathbf{0}^{\top} & 1
+        \end{bmatrix}
+        \begin{bmatrix}
+        \mathbf{P} \\
+        \mathbf{1}
+        \end{bmatrix}
+    \end{align}
+    $$
+
+    <p>Thus, it can represent the transformations from $\mathbf{P}$ to $\mathbf{P}_1$, then to $\mathbf{P}_2$ in a uniform way.</p>
+
+    $$
+    \begin{align}
+        \begin{bmatrix}
+        \mathbf{P}_2 \\
+        1
+        \end{bmatrix}
+        =
+        \mathbf{T}_2 \mathbf{T}_1
+        \begin{bmatrix}
+        \mathbf{P} \\
+        1
+        \end{bmatrix}
+    \end{align}
+    $$
+
+    <p>Original coordinate of 3D point $\mathbf{P}$ and $\mathbf{P}$ in homogeneous coordinates,</p>
+
+    $$
+    \begin{align}
+        \mathbf{P} =
+        \begin{bmatrix}
+        x \\
+        y \\
+        z
+        \end{bmatrix}
+        \quad
+        \mathbf{\tilde P} =
+        \begin{bmatrix}
+        x \\
+        y \\
+        z \\
+        1
+        \end{bmatrix}
+    \end{align}
+    $$
+
+    <p>Homogeneous coordinate is defined only up to scale, all of them represents the same 3D coordinate</p>
+
+    $$
+    \begin{align}
+        s
+        \begin{bmatrix}
+        x \\
+        y \\
+        z \\
+        w
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+        x \\
+        y \\
+        z \\
+        w
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+        x / w \\
+        y / w \\
+        z / w   \\
+        1 
+        \end{bmatrix}
+    \end{align}
+    $$
+
+    <p>where $s$ is a scalar.</p>
+
+    <h2>Illustration of the inverse of the pose</h2>
+    <div class="figure">
+        <img src="./figs/transform_1.jpg" alt="Illustration of the inverse of the pose" style="width: 65%;">
+        <div class="figure-caption">Illustration of the inverse of the pose.</div>
+    </div>
+
+    <p>Let's take a look at this example, the body frame equals to apply a 90 degree counterclockwise rotation around the z-axis. The pose of the body here is simply</p>
+
+    $$
+    \begin{align}
+        \mathbf{T}_{WB} = 
+        \begin{bmatrix}
+        0 & -1 & 0 & 0 \\
+        1 & 0 & 0 & 0 \\
+        0 & 0 & 1 & 0 \\
+        0 & 0 & 0 & 1
+        \end{bmatrix}
+    \end{align}
+    $$
+
+    <p>Given a point $\mathbf{X}_W$ in the world frame,</p>
+
+    $$
+    \begin{align}
+        \mathbf{X}_W = 
+        \begin{bmatrix}
+        1 \\
+        0 \\
+        0 \\
+        1
+        \end{bmatrix}
+    \end{align}
+    $$
+
+    <p>The point in body frame is</p>
+
+    $$
+    \begin{align}
+        \mathbf{X}_B = \begin{bmatrix}
+            0 \\
+            -1 \\
+            0 \\
+            1
+        \end{bmatrix}
+        = \mathbf{T}_{WB}^{-1} \mathbf{X}_W
+        = 
+        \begin{bmatrix}
+            0 & 1 & 0 & 0 \\
+            -1 & 0 & 0 & 0 \\
+            0 & 0 & 1 & 0 \\
+            0 & 0 & 0 & 1
+        \end{bmatrix}
+        \begin{bmatrix}
+            1 \\
+            0 \\
+            0 \\
+            1
+        \end{bmatrix}
+    \end{align}
+    $$
+
+    <h2>Conversion between Coordinate Conventions</h2>
+    <p>The coordinate convention usually consists of left-hand and right-hand system. To tell if a coordinate system is left-hand or right-hand, we just thumbs up for both hands. The direction of the thumb is the direction of the z-axis, and the direction of the fingers is the direction of the x-axis to y-axis. Right hand system is more common, but some softwares like Unity and UnrealEngine do uses left hand system.</p>
+
+    <div class="figure">
+        <img src="figs/left_right_hand.PNG" alt="Left and right hand coordinate systems" style="width: 50%;">
+        <div class="figure-caption">Illustration of the left and right hand systems.</div>
+    </div>
+
+    <p>The confusing part usually not just from the left and right hand system, but also from the difination of X, Y, Z axis. For example, in ROS, X axis is forward, Y is left and Z is up. Different softwares also uses different coordinate conventions. OpenCV, COLMAP, Open3D usually follow the same convention, ROS, OpenGL also use a different convention. The following figures the illustration of the different conventions.</p>
+
+    <div class="figure">
+        <img src="./figs/coord_conventions.PNG" alt="Illustration of the different coordinate conventions" style="width: 60%;">
+        <div class="figure-caption">Illustration of the different coordinate conventions.</div>
+    </div>
+
+    <p>The problem then is how to convert the coordinate convention between different softwares. The answer is to use the a rotation matrix. This is also called <i>change of basis</i> in linear algebra. Note that only when the coordinate conventions are all using either left-hand or right-hand system, we can use a rotation matrix to convert the coordinate convention.</p>
+
+    <p>We first start with converting a reference 3D landmark point $\mathbf{X}$ (in homogeneous coordinates), from the OpenCV convention to ROS convention. The same point will have different coordinates in different conventions, obviously.</p>
+
+    $$
+    \begin{equation}
+    \begin{aligned}
+        \mathbf{X}_{\text{ROS}} & = \mathbf{T}_{\text{OpenCV_to_ROS}} \mathbf{X}_{\text{OpenCV}} \\
+        & = 
+        \begin{bmatrix}
+        0 & 0 & 1 & 0 \\
+        -1 & 0 & 0 & 0 \\
+        0 & -1 & 0 & 0 \\
+        0 & 0 & 0 & 1
+        \end{bmatrix} \mathbf{X}_{\text{OpenCV}}
+    \end{aligned}
+    \end{equation}
+    $$
+
+    <p>So what are we doing here? It's actually quite intuitive, the resultant X-axis in ROS equals to the Z-axis in OpenCV, the Y-axis in ROS is the flip of the X-axis in OpenCV, and the Z-axis in ROS is the flip of the Y-axis in OpenCV. The camera pose in world frame is,</p>
+
+    <p>The tricky part comes from converting a transformation, aka a pose, from one convention to another. We will have to do a little derivation here. In Visual odometry or geometric vision,
+    assume we compute the relative pose $\mathbf{T}_{C_0C}$ between the current frame $C$ and the first frame $C_0$, and also reconstruct a 3D landmark point $\mathbf{X}$ in the first frame $C_0$.</p>
+
+    $$
+    \begin{equation}
+    \begin{aligned}
+        \mathbf{T}_{WC} &= \mathbf{T}_{WC_0} \mathbf{T}_{C_0C} \mathbf{T}_{CC} \\
+        & = \mathbf{T}_{\text{OpenCV_to_ROS}} \mathbf{T}_{C_0C} \mathbf{I}
+    \end{aligned}
+    \end{equation}
+    $$
+
+    <p>And in general, the conversion between two conventions is,</p>
+
+    $$
+    \begin{align}
+        \mathbf{T}_{WC}^{\text{tgt}} = \mathbf{T}_{\text{world_conversion}} \mathbf{T}_{WC}^{\text{src}} \mathbf{T}_{\text{camera_conversion}}^{-1}
+    \end{align}
+    $$
+
+    <p>This equation can easily be proved, assume we have a pose $\mathbf{T}_{AB}$, indicating the pose of frame B in frame A. We want to get the pose of frame D in frame C. And we know the conversion A $\rightarrow$ C, meaning transform a point from A to C, denoted as $\mathbf{T}_{CA}$, B $\rightarrow$ D, meaning transform of a point from B to D, denoted as $\mathbf{T}_{DB}$. Here B and D are camera frames, and A and C are world frames.</p>
+
+    $$
+    \begin{equation}
+    \begin{aligned}
+        \mathbf{T}_{CD} &= \mathbf{T}_{CA} \mathbf{T}_{AB} \mathbf{T}_{BD} \\
+        &= \mathbf{T}_{CA} \mathbf{T}_{AB} \mathbf{T}_{DB}^{-1}
+    \end{aligned}
+    \end{equation}
+    $$
+    
+    <h2>Matrix Lie Group</h2>
+    
+
+</body>
+</html> 
