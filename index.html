@@ -34,10 +34,9 @@
               and how motion planning and RL policy learning could benefit from 3D perception. 
               I currenly work at <a href="https://rai-inst.com/"> RAI Institute </a> (formerly known as Boston Dynamics AI Institute) as a research scientist. 
               I did my PhD at <a href="https://www.cmu.edu/"> Carnegie Mellon University</a>, with <a href="https://www.ri.cmu.edu/ri-faculty/sebastian-scherer/"> Prof. Sebastian Scherer</a>. 
+              <br> <br>
 
-              If you are interested in doing an internship with me at RAI Institute, please shoot me an email. <br> <br>
-
-              <!-- In my free time, I enjoy snowboarding. -->
+              In my free time, I enjoy snowboarding, <a href="#beyond-work">here</a> are some mountains I visited. 
             </p>
             <p>
               <a href="https://scholar.google.com/citations?user=1s8jWIsAAAAJ&hl=en" target="_blank"><img src="icons/google_scholar.png" height="24"></a> /
@@ -51,7 +50,7 @@
           </td>
           <td width="30%">
             <div class="instructorphoto">
-              <img onmouseover="document.getElementById('yafeihu').src='teasers/headshot.png';"
+              <img onmouseover="document.getElementById('yafeihu').src='teasers/headshot2.jpeg';"
                 onmouseout="document.getElementById('yafeihu').src='teasers/headshot.png';"
                 src="teasers/headshot.png" id="yafeihu">
             </div>
@@ -435,12 +434,86 @@
   <br>
 
 
+  <!-- Beyond Work -->
+  <div class="container">
+    <h2 id="beyond-work"> Beyond Work </h2>
+    <div class="beyond-work">
+      <p>Mountains I visited for snowboarding: </p>
+      <div class="snowboard-gallery">
+        <div class="gallery-item">
+          <img src="imgs/killington_VT.jpeg" alt="Killington, VT">
+          <span class="gallery-caption">Killington, VT</span>
+        </div>
+        <div class="gallery-item">
+          <img src="imgs/loon_NH.jpeg" alt="Loon, NH">
+          <span class="gallery-caption">Loon, NH</span>
+        </div>
+        <div class="gallery-item">
+          <img src="imgs/steamboat_CO.jpeg" alt="Steamboat, CO">
+          <span class="gallery-caption">Steamboat, CO</span>
+        </div>
+        <div class="gallery-item">
+          <img src="imgs/copper_CO.jpeg" alt="Copper, CO">
+          <span class="gallery-caption">Copper, CO</span>
+        </div>
+        <div class="gallery-item">
+          <img src="imgs/winterpark_CO.jpeg" alt="Winter Park, CO">
+          <span class="gallery-caption">Winter Park, CO</span>
+        </div>
+        <div class="gallery-item">
+          <img src="imgs/brighton_UT.jpeg" alt="Brighton, UT">
+          <span class="gallery-caption">Brighton, UT</span>
+        </div>
+        <div class="gallery-item">
+          <img src="imgs/mammoth_CA.jpeg" alt="Mammoth, CA">
+          <span class="gallery-caption">Mammoth, CA</span>
+        </div>
+        <div class="gallery-item">
+          <img src="imgs/bigsky_MT.jpeg" alt="Big Sky, MT">
+          <span class="gallery-caption">Big Sky, MT</span>
+        </div>
+        <div class="gallery-item">
+          <img src="imgs/parkcity_UT.JPG" alt="Park City, UT">
+          <span class="gallery-caption">Park City, UT</span>
+        </div>
+        <div class="gallery-item">
+          <img src="imgs/snowbird_UT.JPG" alt="Snowbird, UT">
+          <span class="gallery-caption">Snowbird, UT</span>
+        </div>
+        <div class="gallery-item">
+          <img src="imgs/solitude_UT.jpeg" alt="Solitude, UT">
+          <span class="gallery-caption">Solitude, UT</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+
+
   <div class="containersmall">
     <p style="text-align:right;">Stolen from <a href="https://gkioxari.github.io/">Georgia Gkioxari</a></p>
   </div>
 
+  <!-- Lightbox overlay -->
+  <div id="lightbox" class="lightbox" onclick="this.style.display='none'">
+    <span class="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div id="lightbox-caption" class="lightbox-caption"></div>
+  </div>
+
   <script xml:space="preserve" language="JavaScript">
     hideallbibs();
+
+    // Lightbox for gallery images
+    document.querySelectorAll('.gallery-item img').forEach(function(img) {
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', function() {
+        var lightbox = document.getElementById('lightbox');
+        document.getElementById('lightbox-img').src = this.src;
+        document.getElementById('lightbox-caption').textContent = this.alt;
+        lightbox.style.display = 'flex';
+      });
+    });
   </script>
 
 
